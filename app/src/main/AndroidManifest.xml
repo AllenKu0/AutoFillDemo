@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AutoFillEx">
         <activity
-            android:name=".SavaAccount.SaveAccountActivity"
+            android:name=".SavaAccount.ShowAccountActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,7 @@
             android:name=".SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".AddAccount.AddAccountActivity"
             android:exported="true">
 
             <intent-filter>
@@ -34,7 +34,7 @@
         </activity>
 
         <service
-            android:name=".MyAutofillService"
+            android:name=".service.MyAutofillService"
             android:exported="true"
             android:label="My Autofill Service"
             android:permission="android.permission.BIND_AUTOFILL_SERVICE"

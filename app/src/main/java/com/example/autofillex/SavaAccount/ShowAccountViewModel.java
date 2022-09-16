@@ -19,11 +19,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class SavaAccountViewModel extends ViewModel {
+public class ShowAccountViewModel extends ViewModel {
     MutableLiveData<List<AccountEntity>> accountList = new MutableLiveData<>();
     MutableLiveData<Boolean> isProgressShow = new MutableLiveData<>();
     private Context context;
-    public SavaAccountViewModel(Context context){
+    public ShowAccountViewModel(Context context){
         this.context = context;
     }
     void insetAccount(AccountEntity accountEntity){

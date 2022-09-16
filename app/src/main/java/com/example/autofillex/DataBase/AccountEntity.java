@@ -1,18 +1,20 @@
 package com.example.autofillex.DataBase;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 @Entity(tableName = "account")
 public class AccountEntity {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    private String name;
+    private String username;
 
     private String password;
 
-    public AccountEntity(String name, String password) {
-        this.name = name;
+
+    public AccountEntity(String username, String password) {
+        this.username = username;
         this.password = password;
     }
 
@@ -24,13 +26,12 @@ public class AccountEntity {
         this.id = id;
     }
 
-
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

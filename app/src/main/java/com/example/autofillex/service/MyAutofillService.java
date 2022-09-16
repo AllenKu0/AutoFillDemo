@@ -1,4 +1,4 @@
-package com.example.autofillex;
+package com.example.autofillex.service;
 
 import android.app.PendingIntent;
 import android.app.assist.AssistStructure;
@@ -24,10 +24,11 @@ import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.room.Database;
 
+import com.example.autofillex.AddAccount.AddAccountActivity;
 import com.example.autofillex.DataBase.AccountDataBase;
 import com.example.autofillex.DataBase.AccountEntity;
+import com.example.autofillex.R;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -75,6 +76,7 @@ public class MyAutofillService extends AutofillService {
         HINT_TYPE_COLLECTIONS.add(HINT_TYPE_PASSWORD);
         HINT_TYPE_COLLECTIONS.add(HINT_TYPE_PHONE);
         HINT_TYPE_COLLECTIONS.add(HINT_TYPE_PACKAGE);
+        HINT_TYPE_COLLECTIONS.add(AUTOFILL_HINT_USERNAME);
     }
 
 
@@ -128,12 +130,12 @@ public class MyAutofillService extends AutofillService {
         }
         AccountEntity accountEntity = new Gson().fromJson(String.valueOf(newAccount), AccountEntity.class);
         insertAccount(accountEntity);
-        suggestions.add(suggestion);
+//        suggestions.add(suggestion);
         //成功
         callback.onSuccess();
     }
 
-    //執行自動填入記錄
+    //執行自動填入內容記錄要求
     @Override
     public void onFillRequest(FillRequest request, CancellationSignal cancellationSignal, FillCallback callback) {
         Log.e("TAG", "onFillRequest: ");
@@ -242,7 +244,7 @@ public class MyAutofillService extends AutofillService {
 //        callback.onSuccess(fillResponse);
     }
 
-    //获取所有自动填充的节点
+    //取所有自動填充的節點
     private void parseAllAutofillNode(List<AssistStructure> structures, List<AssistStructure.ViewNode> autofillNodes) {
         for (AssistStructure structure : structures) {
             int windowNodeCount = structure.getWindowNodeCount();
@@ -254,7 +256,7 @@ public class MyAutofillService extends AutofillService {
         }
     }
 
-    //获取所有自动填充的节点
+    //獲取所有自動填充的節點
     private void parseAllAutofillNode(AssistStructure.ViewNode viewNode, List<AssistStructure.ViewNode> autofillNodes) {
         if (viewNode.getAutofillHints() != null)
             autofillNodes.add(viewNode);
@@ -263,7 +265,7 @@ public class MyAutofillService extends AutofillService {
             parseAllAutofillNode(viewNode.getChildAt(i), autofillNodes);
     }
 
-    //获取所有Autofill节点的HintType
+    //獲取所有Autofill節點的HintType
     private Map<AutofillId, String> parseAllHintType(List<AssistStructure> structures) {
         Map<AutofillId, String> hintTypeMap = new HashMap();
         for (AssistStructure structure : structures) {
@@ -349,15 +351,14 @@ public class MyAutofillService extends AutofillService {
     }
 
     private FillResponse getFillResponse(FillRequest request){
-        //获取所有自动填充节点的AutofillId和HintType(AssistStructure包含一切)
+        //獲取所有自動填充的節點的AutofillId和HintType(AssistStructure包含一切)
         List<AssistStructure> structures = request.getFillContexts().stream().map(FillContext::getStructure).collect(Collectors.toList());
         //AutofillId 識別自動填充節點的唯一值/String包含name，password，phone等所有保存的字段
         Map<AutofillId, String> hintTypeMap = parseAllHintType(structures);
-        //每条建议记录对应填充服务中的一个Dataset对象
-        //每个Dataset代表了一套数据，包含name，password，phone等所有保存的字段
-        //我们用Map来记录Dataset的数据，从而可以方便得将其存储到数据库或内存中
+        //每個建議紀錄對應autoFill中的一個Dataset
+        //每個Dataset代表了一套數據(如:帳號及密碼)
         FillResponse.Builder fillResponseBuilder = new FillResponse.Builder();
-        Intent activityIntent = new Intent(this, MainActivity.class);
+        Intent activityIntent = new Intent(this, AddAccountActivity.class);
 //        activityIntent.setAction("android.service.autofill.AutofillService");
 //                activityIntent.setAction("com.allen.AutoFillServerApp");//自訂的 action name
         IntentSender intentSender = PendingIntent.getActivity(
@@ -366,30 +367,28 @@ public class MyAutofillService extends AutofillService {
         ).getIntentSender();
         //存幾個帳密
         for (AccountEntity accountEntity : accountList) {
+            //建立DataSet
             Dataset.Builder datasetBuilder = new Dataset.Builder();
             //獲取已存的帳號
-            String name = accountEntity.getName();
+            String name = accountEntity.getUsername();
             //建立autoFill的view
             RemoteViews presentation = createPresentation(name);
-
             //存帳密
             for (AutofillId autofillId : hintTypeMap.keySet()) {
                 String accountString = new Gson().toJson(accountEntity);
                 try {
                     JSONObject accountJson = new JSONObject(accountString);
-
-                    //将suggestion中的单个字段加入dataset
                     //獲得如HINT_TYPE_NAME、HINT_TYPE_PASSWORD
                     String hintType = hintTypeMap.get(autofillId);
-                    //獲得對應HINT_TYPE_NAME、HINT_TYPE_PASSWORD的值
+                    //獲得對應HINT_TYPE_NAME(name)、HINT_TYPE_PASSWORD(password)的值
                     String value = (String) accountJson.get(hintType);
 
                     if (value != null)
                         datasetBuilder.setValue(autofillId, AutofillValue.forText(value), presentation);
-                    //设置需要保存的表单节点，这一步一定要有，否则Activity退出时不会保存表单
-                    //存內容，值為hintType轉成數字和autofillId
+                    //設置需要保存的表單節點(autofillId)，這一步一定要有，否則Activity退出時不會保存表單
+                    //存內容，值為hintType轉成數字(可自訂)和autofillId
                     SaveInfo.Builder saveInfoBuilder = new SaveInfo.Builder(HINT_TYPE_COLLECTIONS.indexOf(hintType), new AutofillId[]{autofillId});
-                    //设置关联的节点，如果不设置，只有所有节点值发生变化时，系统才认为表单发生了变更，才会询问是否要保存表单
+                    //設置關聯節點，如果不設置，只有所有節點值發生變化時，系统才認為表單發生了变更，才會詢問是否要保存表單
                     //設置有意保存的AutofillId
                     saveInfoBuilder.setOptionalIds(hintTypeMap.keySet().stream().toArray(AutofillId[]::new));
                     SaveInfo saveInfo = saveInfoBuilder.build();

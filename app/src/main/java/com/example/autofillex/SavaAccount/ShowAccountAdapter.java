@@ -4,20 +4,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.autofillex.Account;
 import com.example.autofillex.DataBase.AccountEntity;
-import com.example.autofillex.R;
 import com.example.autofillex.databinding.SaveAccountListBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SaveAccountAdapter extends RecyclerView.Adapter<SaveAccountAdapter.ViewHolder> {
+public class ShowAccountAdapter extends RecyclerView.Adapter<ShowAccountAdapter.ViewHolder> {
     private List<AccountEntity> accountList = new ArrayList<>();
     private SaveAccountListBinding saveAccountListBinding;
     @NonNull
@@ -31,7 +28,7 @@ public class SaveAccountAdapter extends RecyclerView.Adapter<SaveAccountAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Log.e("TAG", "onBindViewHolder: "+accountList.get(position).getName() );
+        Log.e("TAG", "onBindViewHolder: "+accountList.get(position).getUsername() );
         holder.bind(position);
     }
 
@@ -51,8 +48,8 @@ public class SaveAccountAdapter extends RecyclerView.Adapter<SaveAccountAdapter.
             super(itemView);
         }
         public void bind(int position){
-            Log.e("TAG", "rrrr: "+accountList.get(position).getName() );
-            saveAccountListBinding.accountTxt.setText(accountList.get(position).getName());
+            Log.e("TAG", "rrrr: "+accountList.get(position).getUsername() );
+            saveAccountListBinding.accountTxt.setText(accountList.get(position).getUsername());
             saveAccountListBinding.passwordTxt.setText(accountList.get(position).getPassword());
         }
     }

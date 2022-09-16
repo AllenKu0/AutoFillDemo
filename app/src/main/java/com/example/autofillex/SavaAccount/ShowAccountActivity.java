@@ -1,10 +1,7 @@
 package com.example.autofillex.SavaAccount;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,34 +11,29 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.example.autofillex.BaseActivity;
+import com.example.autofillex.base.BaseActivity;
 import com.example.autofillex.DataBase.AccountEntity;
-import com.example.autofillex.MainActivity;
+import com.example.autofillex.AddAccount.AddAccountActivity;
 import com.example.autofillex.R;
 import com.example.autofillex.databinding.ActivitySaveAcconutBinding;
-import com.google.gson.Gson;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
-public class SaveAccountActivity extends BaseActivity {
+public class ShowAccountActivity extends BaseActivity {
 
     private ActivitySaveAcconutBinding activitySaveAcconutBinding;
-    private SaveAccountAdapter adapter;
-    private SavaAccountViewModel savaAccountViewModel;
-    private SaveAccountViewModelFactory factory;
+    private ShowAccountAdapter adapter;
+    private ShowAccountViewModel savaAccountViewModel;
+    private ShowAccountViewModelFactory factory;
     @RequiresApi(api = 33)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_acconut);
 
-        adapter = new SaveAccountAdapter();
-        factory = new SaveAccountViewModelFactory(this);
-        savaAccountViewModel = ViewModelProviders.of(this,factory).get(SavaAccountViewModel.class);
+        adapter = new ShowAccountAdapter();
+        factory = new ShowAccountViewModelFactory(this);
+        savaAccountViewModel = ViewModelProviders.of(this,factory).get(ShowAccountViewModel.class);
 
         activitySaveAcconutBinding = ActivitySaveAcconutBinding.inflate(getLayoutInflater());
 
@@ -79,7 +71,7 @@ public class SaveAccountActivity extends BaseActivity {
     }
 
     private void goToNewAccountActivity(View view){
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, AddAccountActivity.class);
         startActivity(intent);
     }
 }
