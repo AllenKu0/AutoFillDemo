@@ -54,6 +54,17 @@ public class MyAutofillService extends AutofillService {
     public static final String HINT_TYPE_PASSWORD = "password";
     public static final String HINT_TYPE_PHONE = "phone";
     public static final String HINT_TYPE_PACKAGE = "package";
+    //全部HintType
+    public static final String AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE = "creditCardExpirationDate";
+    public static final String AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DAY = "creditCardExpirationDay";
+    public static final String AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH = "creditCardExpirationMonth";
+    public static final String AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR = "creditCardExpirationYear";
+    public static final String AUTOFILL_HINT_CREDIT_CARD_NUMBER = "creditCardNumber";
+    public static final String AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE = "creditCardSecurityCode";
+    public static final String AUTOFILL_HINT_EMAIL_ADDRESS = "emailAddress";
+    public static final String AUTOFILL_HINT_POSTAL_ADDRESS = "postalAddress";
+    public static final String AUTOFILL_HINT_POSTAL_CODE = "postalCode";
+    public static final String AUTOFILL_HINT_USERNAME = "username";
 
     public static final List<String> HINT_TYPE_COLLECTIONS = new ArrayList();
 
@@ -88,7 +99,6 @@ public class MyAutofillService extends AutofillService {
     public void onCreate() {
         super.onCreate();
         this.context = getApplicationContext();
-
     }
 
     //自動填入值發生變更時，跳出
@@ -127,7 +137,7 @@ public class MyAutofillService extends AutofillService {
     @Override
     public void onFillRequest(FillRequest request, CancellationSignal cancellationSignal, FillCallback callback) {
         Log.e("TAG", "onFillRequest: ");
-
+        // ---------------------------Room 版------------------------------------
         getAccountList(new CallBack() {
             @Override
             public void onSuccess() {
@@ -140,6 +150,9 @@ public class MyAutofillService extends AutofillService {
 
             }
         });
+
+        // ---------------------------HashMap 版------------------------------------
+
 //        //获取所有自动填充节点的AutofillId和HintType(AssistStructure包含一切)
 //        List<AssistStructure> structures = request.getFillContexts().stream().map(FillContext::getStructure).collect(Collectors.toList());
 //        //AutofillId 識別自動填充節點的唯一值/String包含name，password，phone等所有保存的字段
@@ -390,36 +403,6 @@ public class MyAutofillService extends AutofillService {
             fillResponseBuilder.addDataset(dataset);
         }
 
-//        for (Map<String, String> suggestion : suggestions) {
-//            Dataset.Builder datasetBuilder = new Dataset.Builder();
-//            //獲取已存的帳號
-//            String name = suggestion.get(HINT_TYPE_NAME);
-////            String name = accountList.get(0).getName();
-//            //建立autoFill的view
-//            RemoteViews presentation = createPresentation(name);
-//            //存帳密
-//            for (AutofillId autofillId : hintTypeMap.keySet()) {
-//                //将suggestion中的单个字段加入dataset
-//                //獲得如HINT_TYPE_NAME、HINT_TYPE_PASSWORD
-//                String hintType = hintTypeMap.get(autofillId);
-//                //獲得對應HINT_TYPE_NAME、HINT_TYPE_PASSWORD的值
-////                suggestion.get(hintType)
-//                String value = suggestion.get(hintType);
-//                if (value != null)
-//                    datasetBuilder.setValue(autofillId, AutofillValue.forText(value), presentation);
-//                //设置需要保存的表单节点，这一步一定要有，否则Activity退出时不会保存表单
-//                //存內容，值為hintType轉成數字和autofillId
-//                SaveInfo.Builder saveInfoBuilder = new SaveInfo.Builder(HINT_TYPE_COLLECTIONS.indexOf(hintType), new AutofillId[]{autofillId});
-//                //设置关联的节点，如果不设置，只有所有节点值发生变化时，系统才认为表单发生了变更，才会询问是否要保存表单
-//                //設置有意保存的AutofillId
-//                saveInfoBuilder.setOptionalIds(hintTypeMap.keySet().stream().toArray(AutofillId[]::new));
-//                SaveInfo saveInfo = saveInfoBuilder.build();
-//                fillResponseBuilder.setSaveInfo(saveInfo);
-////                fillResponseBuilder.setAuthentication(hintTypeMap.keySet().stream().toArray(AutofillId[]::new),intentSender,presentation);
-//            }
-//            Dataset dataset = datasetBuilder.build();
-//            fillResponseBuilder.addDataset(dataset);
-//        }
         FillResponse fillResponse = fillResponseBuilder.build();
         return fillResponse;
     }
